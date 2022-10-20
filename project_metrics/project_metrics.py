@@ -8,8 +8,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-
 CLASSES = ["0", "1"]
+
+# Essas funções foram baseadas em: https://github.com/RomeroBarata/IF702-redes-neurais/blob/master/main.ipynb
 
 def extract_final_losses(history:dict):
     """Função para extrair o melhor loss de treino e validação.
@@ -79,15 +80,24 @@ def print_metrics_summary(accuracy, recall, precision, f1, auroc=None, aupr=None
 #     return y_true,y_pred
 
 
-def plot_confusion_matrix(y_true, y_pred, classes=CLASSES, title = 'Confusion Matrix',figsize = (10,10), fontsize = 20,fmt = 'd'):
+def plot_confusion_matrix(y_true, y_pred, fontsize = 20):
+    """
+    This function was based on https://medium.com/@dtuk81/confusion-matrix-visualization-fc31e3f30fea
+    """
     #y_true,y_pred = get_data(network, test_data)
-    cm = confusion_matrix(y_true,y_pred)
-    plt.figure(figsize = figsize)
-    plt.title(title,fontsize = fontsize + int(0.5*fontsize))
-    s = sns.heatmap(cm, annot = True, xticklabels = classes, yticklabels = classes,fmt = fmt)
+    cf_matrix = confusion_matrix(y_true,y_pred)
+    group_names = ["True Neg","False Pos","False Neg","True Pos"]
+    group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
+    group_percentages = ["{0:.2%}".format(value) for value in cf_matrix.flatten()/np.sum(cf_matrix)]
+    labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in zip(group_names,group_counts,group_percentages)]
+    labels = np.asarray(labels).reshape(2,2)
+    s = sns.heatmap(cf_matrix, annot=labels, fmt="")
+    # plt.figure(figsize = figsize)
+    # plt.title(title,fontsize = fontsize + int(0.5*fontsize))
+    # s = sns.heatmap(cm, annot = True, xticklabels = classes, yticklabels = classes,fmt = fmt)
     s.set_xlabel('Predicted Label',fontsize = fontsize)
     s.set_ylabel('True Label', fontsize = fontsize)
-    plt.show()
+    #plt.show()
 
 def print_classification_report(y_true,y_pred, classes=CLASSES):
     # y_true,y_pred = get_data(network, test_data)
